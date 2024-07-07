@@ -69,3 +69,5 @@ Most of the original files were completely refactored though.
 [6]: http://git.lcsr.jhu.edu/cgrauma1/kuka_iiwa_shared
 [7]: https://github.com/rtkg/lbr_iiwa
 [8]: https://github.com/SalvoVirga/iiwa_stack/wiki
+
+В папке iiwa_scripts добавлены файлы forward_kinematic и inverce_kinematic. 
