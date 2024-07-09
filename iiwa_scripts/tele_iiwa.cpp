@@ -27,33 +27,45 @@
 
 std::vector<float> desired_pose={0, 0, 0};
 
-void waitForMotion(iiwa_ros::service::TimeToDestinationService& time_2_dist, double time_out = 2.0)
-{
-    double time = time_2_dist.getTimeToDestination();
-    ros::Time start_wait = ros::Time::now();
-    while (time < 0.0 && (ros::Time::now() - start_wait) < ros::Duration(time_out)) {
-        ros::Duration(0.5).sleep();
-        time = time_2_dist.getTimeToDestination();
-    }
-    if (time > 0.0) {
-        // ROS_INFO_STREAM("Sleeping for " << time << " seconds.");
-        ros::Duration(time).sleep();
-    } 
-}
+// void waitForMotion(iiwa_ros::service::TimeToDestinationService& time_2_dist, double time_out = 2.0)
+// {
+//     double time = time_2_dist.getTimeToDestination();
+//     ros::Time start_wait = ros::Time::now();
+//     while (time < 0.0 && (ros::Time::now() - start_wait) < ros::Duration(time_out)) {
+//         ros::Duration(0.5).sleep();
+//         time = time_2_dist.getTimeToDestination();
+//     }
+//     if (time > 0.0) {
+//         // ROS_INFO_STREAM("Sleeping for " << time << " seconds.");
+//         ros::Duration(time).sleep();
+//     } 
+// }
 
 void pose_callback(std_msgs::Float32MultiArray msg)
 {
-   if (fabs(desired_pose[0]-msg.data[0]) > 0.02 && fabs(desired_pose[1]-msg.data[1]) > 0.02 && fabs(desired_pose[2]-msg.data[2]) > 0.02 )
+//    if (fabs(desired_pose[0]-msg.data[0]) > 0.02 && fabs(desired_pose[1]-msg.data[1]) > 0.02 && fabs(desired_pose[2]-msg.data[2]) > 0.02 )
     {
         desired_pose[0] = msg.data[0];
         desired_pose[1] = msg.data[1];
         desired_pose[2] = msg.data[2];
     }
-    else
-    {
-        desired_pose = {0, 0, 0};
-    }
+    // else
+    // {
+    //     desired_pose = {0, 0, 0};
+    // }
 
+}
+
+void set_joint_positions(iiwa_ros::command::JointPosition &jp_command, iiwa_msgs::JointPosition &joint_position, const std::vector<double> &positions, double delay) {
+    joint_position.position.a1 = positions[0];
+    joint_position.position.a2 = positions[1];
+    joint_position.position.a3 = positions[2];
+    joint_position.position.a4 = positions[3];
+    joint_position.position.a5 = positions[4];
+    joint_position.position.a6 = positions[5];
+    joint_position.position.a7 = positions[6];
+    jp_command.setPosition(joint_position);
+    ros::Duration(delay).sleep();
 }
 
 int main(int argc, char **argv)
@@ -116,7 +128,7 @@ int main(int argc, char **argv)
     j_vel.setSmartServoJointSpeedLimits(Jvel, Jvel);
     c_vel.setMaxCartesianVelocity(cartesian_velocity); 
     ros::Duration(0.5).sleep();  // wait to initialize ros topics
-    std::vector<float> orient = {0.707165002823, 0.707041292473, -0.00230447391603, -0.00221763853181};
+    // std::vector<float> orient = {0.707165002823, 0.707041292473, -0.00230447391603, -0.00221763853181};
     auto cartesian_position = cp_state.getPose();
     init_pos = cartesian_position.poseStamped;
     
@@ -125,9 +137,74 @@ int main(int argc, char **argv)
     // joint_position.position.a2 = joint_position.position.a2 + 0.39;
     // joint_position.position.a4 = joint_position.position.a4 + 0.021;
     // joint_position.position.a6 = joint_position.position.a6 + 1.57;
-    jp_command.setPosition(joint_position);
 
+    // joint_position.position.a1 = 0.0;
+    // joint_position.position.a2 = 0.0;
+    // joint_position.position.a3 = 0.0;
+    // joint_position.position.a4 = 0.0;
+    // joint_position.position.a5 = 0.0;
+    // joint_position.position.a6 = 0.0;
+    // joint_position.position.a7 = 0.0;
 
+    // jp_command.setPosition(joint_position);
+
+    // ros::Duration(3).sleep();
+
+    // joint_position.position.a1 = 0.0;
+    // joint_position.position.a2 = 0.0;
+    // joint_position.position.a3 = 0.0;
+    // joint_position.position.a4 = 0.0;
+    // joint_position.position.a5 = 0.0;
+    // joint_position.position.a6 = 0.6;
+    // joint_position.position.a7 = 0.0;
+
+    // jp_command.setPosition(joint_position);
+
+    // ros::Duration(3).sleep();
+
+    // joint_position.position.a1 = 0.0;
+    // joint_position.position.a2 = 0.0;
+    // joint_position.position.a3 = 0.0;
+    // joint_position.position.a4 = 0.0;
+    // joint_position.position.a5 = 0.0;
+    // joint_position.position.a6 = 0.0;
+    // joint_position.position.a7 = 0.0;
+
+    // jp_command.setPosition(joint_position);
+
+    // ros::Duration(3).sleep();
+
+    // joint_position.position.a1 = 0.0;
+    // joint_position.position.a2 = 0.0;
+    // joint_position.position.a3 = 0.0;
+    // joint_position.position.a4 = 0.0;
+    // joint_position.position.a5 = 0.0;
+    // joint_position.position.a6 = - 0.6;
+    // joint_position.position.a7 = 0.0;
+
+    // jp_command.setPosition(joint_position);
+
+    // ros::Duration(3).sleep();
+
+    // joint_position.position.a1 = 0.0;
+    // joint_position.position.a2 = 0.0;
+    // joint_position.position.a3 = 0.0;
+    // joint_position.position.a4 = 0.0;
+    // joint_position.position.a5 = 0.0;
+    // joint_position.position.a6 = 0.0;
+    // joint_position.position.a7 = 0.0;
+
+    // jp_command.setPosition(joint_position);
+
+    set_joint_positions(jp_command, joint_position, {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}, 5);
+    set_joint_positions(jp_command, joint_position, {0.78, 0.7, 0.0, -0.7, 0.0, 0.7, 0.0}, 5);
+    set_joint_positions(jp_command, joint_position, {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}, 5);
+  
+    // set_joint_positions(jp_command, joint_position, {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}, 3);
+    // set_joint_positions(jp_command, joint_position, {0.0, 0.0, 0.0, 0.0, 0.0, -0.6, 0.0}, 3);
+    // set_joint_positions(jp_command, joint_position, {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}, 3);
+
+    return 0;
     // while(true)
     // {
     // // cartesian_position = cp_state.getPose();

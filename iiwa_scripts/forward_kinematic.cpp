@@ -30,34 +30,13 @@
 #include <csignal>
 #include <vector>
 
-// #include <trajectory_msgs/JointTrajectory.h>
-// #include <trajectory_msgs/JointTrajectoryPoint.h>
-
 void keyboardCallback(const std_msgs::String::ConstPtr& msg)
 {
     ROS_INFO("Received keyboard input: %s", msg->data.c_str());
 }
 
-// trajectory_msgs::JointTrajectoryPoint createTrajectoryPoint(const std::vector<double>& positions, double time_from_start) {
-    // trajectory_msgs::JointTrajectoryPoint point;
+std::vector<float> joint_desired_pose={0, 0, 0}; //нулевое положение для шарниров?
 
-// std_msgs::Float32MultiArray msg;
-
-std::vector<float> joint_desired_pose={0, 0, 0, 0, 0, 0, 0}; //нулевое положение для шарниров?
-
-// void waitForMotion(iiwa_ros::service::TimeToDestinationService& time_2_dist, double time_out = 2.0)
-// {
-//     double time = time_2_dist.getTimeToDestination();
-//     ros::Time start_wait = ros::Time::now();
-//     while (time < 0.0 && (ros::Time::now() - start_wait) < ros::Duration(time_out)) {
-//         ros::Duration(0.5).sleep();
-//         time = time_2_dist.getTimeToDestination();
-//     }
-//     if (time > 0.0) {
-//         // ROS_INFO_STREAM("Sleeping for " << time << " seconds.");
-//         ros::Duration(time).sleep();
-//     } 
-// }
 
 void pose_callback(std_msgs::Float32MultiArray msg)
 {
@@ -66,10 +45,6 @@ void pose_callback(std_msgs::Float32MultiArray msg)
         joint_desired_pose[0] = msg.data[0];
         joint_desired_pose[1] = msg.data[1];
         joint_desired_pose[2] = msg.data[2];
-        joint_desired_pose[3] = msg.data[3];
-        joint_desired_pose[4] = msg.data[4];
-        joint_desired_pose[5] = msg.data[5];
-        joint_desired_pose[6] = msg.data[6];
     }
     // else
     // {
@@ -78,12 +53,16 @@ void pose_callback(std_msgs::Float32MultiArray msg)
 
 }
 
-std_msgs::Float32MultiArray createTrajectoryPoint(const std::vector<double>& positions) {
-    std_msgs::Float32MultiArray point;
-    for (double pos : positions) {
-        point.data.push_back(pos);
-    }
-    return point;
+void set_joint_positions(iiwa_ros::command::JointPosition &jp_command, iiwa_msgs::JointPosition &joint_position, const std::vector<double> &positions, double delay) {
+    joint_position.position.a1 = positions[0];
+    joint_position.position.a2 = positions[1];
+    joint_position.position.a3 = positions[2];
+    joint_position.position.a4 = positions[3];
+    joint_position.position.a5 = positions[4];
+    joint_position.position.a6 = positions[5];
+    joint_position.position.a7 = positions[6];
+    jp_command.setPosition(joint_position);
+    ros::Duration(delay).sleep();
 }
 
 int main(int argc, char **argv)
@@ -146,7 +125,6 @@ int main(int argc, char **argv)
     jp_state.init("iiwa");
 
     ros::Publisher chatter_pub = nh.advertise<std_msgs::Float32MultiArray>("Coordinate_public", 1000);
-    // ros::Publisher gripper_command = nh.advertise<std_msgs::Bool>("/iiwa/command/GripperCommand", 1000);
     // // gripper
     // std_msgs::Bool gripper;
     // bool open = true;
@@ -159,33 +137,19 @@ int main(int argc, char **argv)
     j_vel.setSmartServoJointSpeedLimits(Jvel, Jvel);
     c_vel.setMaxCartesianVelocity(cartesian_velocity); 
     ros::Duration(0.5).sleep();  // wait to initialize ros topics
-    // std::vector<float> orient = {0.707165002823, 0.707041292473, -0.00230447391603, -0.00221763853181};
     auto cartesian_position = cp_state.getPose();
     auto joint_position = jp_state.getPosition();
     std_msgs::Float32MultiArray msg;
-    // init_pos = cartesian_position.poseStamped; // для обратной кинематики
 
-    msg.data = {joint_position.position.a1, joint_position.position.a2,
-                joint_position.position.a3, joint_position.position.a4, joint_position.position.a5,
-                joint_position.position.a6, joint_position.position.a7};
-
-    chatter_pub.publish(msg);
-
-    std::vector<std_msgs::Float32MultiArray> points;
-    points.push_back(createTrajectoryPoint({0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}));
-    points.push_back(createTrajectoryPoint({0.78, 0.7, 0.0, -0.7, 0.0, 0.7, 0.0})); //3.0 - 3 секудна
-    points.push_back(createTrajectoryPoint({0.0, 0.5, 0.0, -0.2, 0.0, 0.2, 0.0}));
-    points.push_back(createTrajectoryPoint({-0.78, 0.7, 0.0, -0.7, 0.0, 0.7, 0.0}));
-    points.push_back(createTrajectoryPoint({0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}));
-
-    for (const auto& point : points) {
-    chatter_pub.publish(point);
-    ros::Duration(3.0).sleep(); // Задержка между публикациями точек
-    jp_command.setPosition(joint_position);
-    }
+    set_joint_positions(jp_command, joint_position, {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}, 5);
+    set_joint_positions(jp_command, joint_position, {0.78, 0.7, 0.0, -0.7, 0.0, 0.7, 0.0}, 5);
+    set_joint_positions(jp_command, joint_position, {0.0, 0.5, 0.0, -0.2, 0.0, 0.2, 0.0}, 5);
+    set_joint_positions(jp_command, joint_position, {-0.78, 0.7, 0.0, -0.7, 0.0, 0.7, 0.0}, 5);
+    set_joint_positions(jp_command, joint_position, {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}, 5);
 
     return 0;
 }
+
 
 
 //     // Для симулятора gazebo
@@ -238,7 +202,7 @@ int main(int argc, char **argv)
 // int main(int argc, char **argv)
 // {
 //     // Инициализация узла ROS
-//     ros::init(argc, argv, "kuka_iiwa_controller");
+//     ros::init(argc, argv, "forward_kinematic");
 //     ros::NodeHandle nh;
 
 //     // Создание издателя для отправки команд движения
@@ -259,9 +223,11 @@ int main(int argc, char **argv)
 
 //     // Определение точек траектории и времени достижения
 //     std::vector<trajectory_msgs::JointTrajectoryPoint> points;
-//     points.push_back(createTrajectoryPoint({1.57, 0.0, 0.7, 0.0, 0.0, 0.0, 0.0}, 3.0));
-//     points.push_back(createTrajectoryPoint({1.0, 0.0, 0.7, 0.7, 0.7, 0.7, 0.7}, 6.0));
-//     points.push_back(createTrajectoryPoint({0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}, 9.0));
+//     points.push_back(createTrajectoryPoint({0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}, 3.0));
+//     points.push_back(createTrajectoryPoint({0.78, 0.7, 0.0, -0.7, 0.0, 0.7, 0.0}, 6.0)); //3.0 - 3 секудна
+//     points.push_back(createTrajectoryPoint({0.0, 0.5, 0.0, -0.2, 0.0, 0.2, 0.0}, 9.0));
+//     points.push_back(createTrajectoryPoint({-0.78, 0.7, 0.0, -0.7, 0.0, 0.7, 0.0}, 12.0));
+//     points.push_back(createTrajectoryPoint({0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}, 15.0));
 
 //     // Добавление точек к сообщению о траектории
 //     msg.points.insert(msg.points.end(), points.begin(), points.end());
