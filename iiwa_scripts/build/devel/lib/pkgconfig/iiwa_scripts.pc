@@ -1,0 +1,8 @@
+prefix=/home/alex/iiwa_stack_ws/src/iiwa_stack/iiwa_scripts/build/devel
+
+Name: iiwa_scripts
+Description: Description of iiwa_scripts
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

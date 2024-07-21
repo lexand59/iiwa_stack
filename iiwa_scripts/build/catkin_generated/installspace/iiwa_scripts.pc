@@ -1,0 +1,8 @@
+prefix=/usr/local
+
+Name: iiwa_scripts
+Description: Description of iiwa_scripts
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

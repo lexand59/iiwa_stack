@@ -1,0 +1,1 @@
+/usr/bin/c++ -fPIC -g  -shared -Wl,-soname,libgtest_maind.so -o ../lib/libgtest_maind.so CMakeFiles/gtest_main.dir/src/gtest_main.cc.o  -Wl,-rpath,/home/alex/iiwa_stack_ws/src/iiwa_stack/iiwa_scripts/build/gtest/lib ../lib/libgtestd.so -lpthread 

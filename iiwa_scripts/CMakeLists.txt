@@ -1,6 +1,5 @@
 cmake_minimum_required(VERSION 3.0.2)
 project(iiwa_scripts)
-
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
 
@@ -104,7 +103,8 @@ find_package(catkin REQUIRED COMPONENTS
 ## LIBRARIES: libraries you create in this project that dependent projects also need
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
-catkin_package(
+
+catkin_package(  
 #  INCLUDE_DIRS include
 #  LIBRARIES iiwa_scripts
 #  CATKIN_DEPENDS other_catkin_pkg
@@ -117,10 +117,9 @@ catkin_package(
 
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
-include_directories(
+include_directories( ${catkin_INCLUDE_DIRS}
 # include
 # ${catkin_INCLUDE_DIRS}
-${catkin_INCLUDE_DIRS}
 )
 
 ## Declare a C++ library
@@ -143,12 +142,19 @@ add_executable(keyboard keyboard_interceptor.cpp)
 target_link_libraries(keyboard ${catkin_LIBRARIES} ${PYTHON_LIBRARIES})
 add_executable(tele_iiwa tele_iiwa.cpp)
 target_link_libraries(tele_iiwa ${catkin_LIBRARIES} ${PYTHON_LIBRARIES})
-#add_executable(command_iiwa_CP command_iiwa_CP.cpp)
-#target_link_libraries(command_iiwa_CP ${catkin_LIBRARIES} ${PYTHON_LIBRARIES})
+# add_executable(command_iiwa_CP command_iiwa_CP.cpp)
+# target_link_libraries(command_iiwa_CP ${catkin_LIBRARIES} ${PYTHON_LIBRARIES})
 add_executable(forward_kinematic forward_kinematic.cpp)
 target_link_libraries(forward_kinematic ${catkin_LIBRARIES} ${PYTHON_LIBRARIES})
 add_executable(inverce_kinematic inverce_kinematic.cpp)
 target_link_libraries(inverce_kinematic ${catkin_LIBRARIES} ${PYTHON_LIBRARIES})
+# add_executable(Scripts Scripts.cpp)
+# target_link_libraries(Scripts ${catkin_LIBRARIES} ${PYTHON_LIBRARIES})
+# target_link_libraries(Scripts ${LibHD_LIBRARIES} ${PYTHON_LIBRARIES})
+# add_executable(iiwa_omni iiwa_omni.cpp)
+# add_dependencies(iiwa_omni ${catkin_EXPORTED_TARGETS})
+# target_link_libraries(iiwa_omni HD HDU rt ncurses ${catkin_LIBRARIES})
+
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
 ## target back to the shorter version for ease of user use
