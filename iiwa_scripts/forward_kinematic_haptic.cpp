@@ -36,7 +36,7 @@
 
 #include <trajectory_msgs/JointTrajectory.h>
 #include <trajectory_msgs/JointTrajectoryPoint.h>
-// #include <omni_msgs/OmniButtonEvent.h>
+#include <omni_msgs/OmniButtonEvent.h>
 #include <sensor_msgs/JointState.h>
 
 
@@ -89,8 +89,8 @@ int main(int argc, char **argv)
     ros::Publisher joint_pub = nh.advertise<trajectory_msgs::JointTrajectory>("/iiwa/PositionJointInterface_trajectory_controller/command", 10);
 
     // Создание подписчика для получения данных от Haptic устройства
-    // ros::Subscriber haptic_sub = nh.subscribe<sensor_msgs::JointState>("/phantom/joint_states", 10, boost::bind(hapticCallback, _1, boost::ref(joint_pub)));
-    //ros::Subscriber kuka_pos_sub = nh.subscribe<iiwa_msgs::CartesianPose>("/iiwa/state/CartesianPose", 10,)
+    ros::Subscriber haptic_sub = nh.subscribe<sensor_msgs::JointState>("/phantom/joint_states", 10, boost::bind(hapticCallback, _1, boost::ref(joint_pub)));
+    // ros::Subscriber kuka_pos_sub = nh.subscribe<iiwa_msgs::CartesianPose>("/iiwa/state/CartesianPose", 10,)
     // Задание скорости обновления (10Hz)
     ros::Rate rate(10);
 

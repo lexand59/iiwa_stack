@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.0.2)
-project(iiwa_scripts)
+project(iiwa_haptic)
+
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
 
@@ -9,9 +10,11 @@ project(iiwa_scripts)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   std_msgs
-  iiwa_ros
-  std_msgs
   message_generation
+  iiwa_moveit
+  iiwa_ros
+  omni_msgs
+  omni_common
 )
 
 ## System dependencies are found with CMake's conventions
@@ -71,7 +74,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## Generate added messages and services with any dependencies listed here
 # generate_messages(
 #   DEPENDENCIES
-#   std_msgs  # Or other packages containing msgs
+#   iiwa_msgs#   omni_msgs#   omni_msgs#   std_msgs
 # )
 
 ################################################
@@ -103,11 +106,10 @@ find_package(catkin REQUIRED COMPONENTS
 ## LIBRARIES: libraries you create in this project that dependent projects also need
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
-
-catkin_package(  
+catkin_package(
 #  INCLUDE_DIRS include
-#  LIBRARIES iiwa_scripts
-#  CATKIN_DEPENDS other_catkin_pkg
+#  LIBRARIES iiwa_haptic
+#  CATKIN_DEPENDS iiwa_control iiwa_hw iiwa_moveit iiwa_msgs iiwa_ros omni_common omni_msgs omni_msgs roscpp std_msgs
 #  DEPENDS system_lib
 )
 
@@ -117,14 +119,14 @@ catkin_package(
 
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
-include_directories( ${catkin_INCLUDE_DIRS}
-# include
-# ${catkin_INCLUDE_DIRS}
+include_directories(
+  include
+  ${catkin_INCLUDE_DIRS}
 )
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
-#   src/${PROJECT_NAME}/iiwa_scripts.cpp
+#   src/${PROJECT_NAME}/iiwa_haptic.cpp
 # )
 
 ## Add cmake target dependencies of the library
@@ -135,29 +137,8 @@ include_directories( ${catkin_INCLUDE_DIRS}
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-# add_executable(${PROJECT_NAME}_node src/iiwa_scripts_node.cpp)
-add_executable(code code.cpp)
-target_link_libraries(code ${catkin_LIBRARIES} ${PYTHON_LIBRARIES})
-add_executable(keyboard keyboard_interceptor.cpp)
-target_link_libraries(keyboard ${catkin_LIBRARIES} ${PYTHON_LIBRARIES})
-add_executable(tele_iiwa tele_iiwa.cpp)
-target_link_libraries(tele_iiwa ${catkin_LIBRARIES} ${PYTHON_LIBRARIES})
-# add_executable(command_iiwa_CP command_iiwa_CP.cpp)
-# target_link_libraries(command_iiwa_CP ${catkin_LIBRARIES} ${PYTHON_LIBRARIES})
-add_executable(forward_kinematic forward_kinematic.cpp)
-target_link_libraries(forward_kinematic ${catkin_LIBRARIES} ${PYTHON_LIBRARIES})
-add_executable(forward_kinematic_haptic forward_kinematic_haptic.cpp)
-target_link_libraries(forward_kinematic_haptic ${catkin_LIBRARIES} ${PYTHON_LIBRARIES})
-add_executable(inverce_kinematic inverce_kinematic.cpp)
-target_link_libraries(inverce_kinematic ${catkin_LIBRARIES} ${PYTHON_LIBRARIES})
-add_executable(gazebo_forward_kinematic gazebo_forward_kinematic.cpp)
-target_link_libraries(gazebo_forward_kinematic ${catkin_LIBRARIES} ${PYTHON_LIBRARIES})
-# add_executable(Scripts Scripts.cpp)
-# target_link_libraries(Scripts ${catkin_LIBRARIES} ${PYTHON_LIBRARIES})
-# target_link_libraries(Scripts ${LibHD_LIBRARIES} ${PYTHON_LIBRARIES})
-# add_executable(iiwa_omni iiwa_omni.cpp)
-# add_dependencies(iiwa_omni ${catkin_EXPORTED_TARGETS})
-# target_link_libraries(iiwa_omni HD HDU rt ncurses ${catkin_LIBRARIES})
+add_executable(${PROJECT_NAME} src/haptic_to_iiwa.cpp src/quaternion.cpp include/iiwa_haptic/quaternion.hpp)
+add_dependencies(${PROJECT_NAME} iiwa_msgs_generate_messages_cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -170,9 +151,9 @@ target_link_libraries(gazebo_forward_kinematic ${catkin_LIBRARIES} ${PYTHON_LIBR
 # add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-# target_link_libraries(${PROJECT_NAME}_node
-#   ${catkin_LIBRARIES}
-# )
+target_link_libraries(${PROJECT_NAME}
+   ${catkin_LIBRARIES}
+)
 
 #############
 ## Install ##
@@ -221,7 +202,7 @@ target_link_libraries(gazebo_forward_kinematic ${catkin_LIBRARIES} ${PYTHON_LIBR
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_iiwa_scripts.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_iiwa_haptic.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()

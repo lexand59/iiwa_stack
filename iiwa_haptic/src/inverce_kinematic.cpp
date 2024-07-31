@@ -28,6 +28,8 @@
 
 // Глобальный объект для публикации
 ros::Publisher pose_pub;
+geometry_msgs::PoseStamped pose_msg;
+geometry_msgs::PoseStamped pose_msg;
 
 // Переменная для хранения состояния кнопки
 bool buttonPressed = false; // проверь
@@ -37,7 +39,7 @@ void hapticCallback(const geometry_msgs::PoseStamped::ConstPtr& msg)
 {
     // Вывод координат позиции и ориентации
     ROS_INFO("Haptic Device Position: x=%.2f, y=%.2f, z=%.2f",
-             msg->pose.position.x * 4, msg->pose.position.y * 4, msg->pose.position.z * 4);
+             msg->pose.position.x * 4, msg->pose.position.y * 4, msg->pose.position.z * 4 + 0.5);
 
     ROS_INFO("Haptic Device Orientation: x=%.2f, y=%.2f, z=%.2f, w=%.2f",
              msg->pose.orientation.x, msg->pose.orientation.y, msg->pose.orientation.z, msg->pose.orientation.w);
@@ -47,14 +49,14 @@ void hapticCallback(const geometry_msgs::PoseStamped::ConstPtr& msg)
     // pose_msg.header.seq = 0;
     pose_msg.header.stamp = ros::Time::now(); // необходимо ли это?
     pose_msg.header.frame_id = "iiwa_link_0";
-    pose_msg.pose.position.x = msg->pose.position.x * 4;
-    pose_msg.pose.position.y = msg->pose.position.y * 4;
-    pose_msg.pose.position.z = msg->pose.position.z * 4 + 0.5;
-    // pose_msg.pose.orientation = msg->pose.orientation; // общая ориентация
-    pose_msg.pose.orientation.x = msg->pose.orientation.x;
-    pose_msg.pose.orientation.y = msg->pose.orientation.y;
-    pose_msg.pose.orientation.z = msg->pose.orientation.z;
-    pose_msg.pose.orientation.w = msg->pose.orientation.w;
+    pose_msg.pose.position.x = 0.1; /*msg->pose.position.x * 4;*/
+    pose_msg.pose.position.y = 0.1; /*msg->pose.position.y * 4;*/
+    pose_msg.pose.position.z = 1.1; /*msg->pose.position.z * 4 + 0.5;*/
+    pose_msg.pose.orientation = msg->pose.orientation; // общая ориентация
+    // pose_msg.pose.orientation.x = msg->pose.orientation.x;
+    // pose_msg.pose.orientation.y = msg->pose.orientation.y;
+    // pose_msg.pose.orientation.z = msg->pose.orientation.z;
+    // pose_msg.pose.orientation.w = msg->pose.orientation.w;
 
     pose_pub.publish(pose_msg);
     }
@@ -93,7 +95,7 @@ int main(int argc, char **argv)
     // pose_msg.pose.orientation.z = 0.0;
     // pose_msg.pose.orientation.w = 0.0;
 
-    ros::Rate loop_rate(1); // Set the loop rate (Hz)
+    ros::Rate loop_rate(10); // Set the loop rate (Hz)
 
     while (ros::ok())
     {
